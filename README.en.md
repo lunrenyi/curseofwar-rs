@@ -35,6 +35,7 @@ Population is your primary resource. Each tile holds at most 499 citizens per co
 | `F` / `S` | Speed up / slow down |
 | `P` | Pause / resume |
 | `Q` | Quit (Y/N confirmation dialog) |
+| `?` | Show gameplay help (press `?` or `Esc` to close) |
 
 Victory: wipe out every other country's population. Defeat: your population reaches 0.
 

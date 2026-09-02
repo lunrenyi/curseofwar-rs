@@ -6,6 +6,7 @@
 
 pub mod dialog;
 pub mod help;
+pub mod help_overlay;
 pub mod map;
 pub mod status;
 pub mod timeline;
@@ -85,6 +86,12 @@ impl<'a> FrameCtx<'a> {
 /// can still update behind it; we blit a small centred box on top.
 pub fn draw_quit_dialog(state: &State, ui: &UiState, lang: &Lang, area: Rect, buf: &mut Buffer) {
     dialog::draw_quit(state, ui, lang, area, buf);
+}
+
+/// Full-screen help overlay shown when `Modal::Help` is active. Drawn last
+/// so it sits above the bottom help block and the outcome banner.
+pub fn draw_help_dialog(state: &State, ui: &UiState, lang: &Lang, area: Rect, buf: &mut Buffer) {
+    help_overlay::draw_help(state, ui, lang, area, buf);
 }
 
 /// Outcome text overlays (main.c:54-69). Only drawn when the game has ended.

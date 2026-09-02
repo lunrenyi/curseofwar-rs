@@ -9,11 +9,12 @@ use cow_core::types::Loc;
 use crossterm::event::{KeyCode, KeyEvent};
 
 /// Application-level mode. QuitConfirm freezes simulation until the user
-/// decides; otherwise the game runs normally.
+/// decides; Help opens the full gameplay overlay; otherwise the game runs.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Modal {
     None,
     QuitConfirm,
+    Help,
 }
 
 /// Translate a single key event into a list of actions. Some keys emit
@@ -40,12 +41,24 @@ pub fn map_key(
                 _ => return (vec![], Some(Modal::QuitConfirm)),
             }
         }
+        Modal::Help => {
+            match key.code {
+                KeyCode::Char('?') | KeyCode::Esc => {
+                    return (vec![], Some(Modal::None));
+                }
+                _ => return (vec![], Some(Modal::Help)),
+            }
+        }
         Modal::None => {}
     }
     match key.code {
         KeyCode::Char('q') | KeyCode::Char('Q') => {
             // Enter quit-confirmation modal.
             return (vec![], Some(Modal::QuitConfirm));
+        }
+        KeyCode::Char('?') => {
+            // Open the full gameplay help overlay.
+            return (vec![], Some(Modal::Help));
         }
         KeyCode::Char('h') | KeyCode::Left => {
             let ni = (cursor.i - 1).max(0);
@@ -90,5 +103,37 @@ pub fn map_key(
             return (vec![Action::Noop], None);
         }
         _ => return (vec![Action::Noop], None),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+
+    fn k(c: char) -> KeyEvent {
+        KeyEvent::new(KeyCode::Char(c), KeyModifiers::NONE)
+    }
+
+    #[test]
+    fn question_mark_opens_help() {
+        let (_, m) = map_key(k('?'), Loc { i: 0, j: 0 }, Modal::None, 10, 10);
+        assert_eq!(m, Some(Modal::Help));
+    }
+
+    #[test]
+    fn help_dismisses_on_question_and_esc() {
+        let (_, m1) = map_key(k('?'), Loc { i: 0, j: 0 }, Modal::Help, 10, 10);
+        assert_eq!(m1, Some(Modal::None));
+        let esc = KeyEvent::new(KeyCode::Esc, KeyModifiers::NONE);
+        let (_, m2) = map_key(esc, Loc { i: 0, j: 0 }, Modal::Help, 10, 10);
+        assert_eq!(m2, Some(Modal::None));
+    }
+
+    #[test]
+    fn help_swallows_other_keys() {
+        let (a, m) = map_key(k('h'), Loc { i: 0, j: 0 }, Modal::Help, 10, 10);
+        assert!(a.is_empty());
+        assert_eq!(m, Some(Modal::Help));
     }
 }

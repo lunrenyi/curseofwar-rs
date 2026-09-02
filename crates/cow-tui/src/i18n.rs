@@ -90,6 +90,17 @@ pub enum TextKey {
     HelpPauseKey,
     HelpQuitKey,
 
+    // Help overlay (Modal::Help)
+    HelpOverlayTitle,
+    HelpOverlayGoalHeading,
+    HelpOverlayGoalLine,
+    HelpOverlayMechanicsHeading,
+    HelpOverlayMechanicsPopulation,
+    HelpOverlayMechanicsGold,
+    HelpOverlayMechanicsCapture,
+    HelpOverlayKeysHeading,
+    HelpOverlayDismiss,
+
     // Outcome banner
     YouWon,
     YouLost,
@@ -247,6 +258,42 @@ impl Lang {
             (Lang::Zh, TextKey::HelpQuit) => Cow::Borrowed("退出"),
             (Lang::En, TextKey::HelpQuit) => Cow::Borrowed("quit"),
 
+            // Help overlay
+            (Lang::Zh, TextKey::HelpOverlayTitle) => Cow::Borrowed("游戏帮助"),
+            (Lang::En, TextKey::HelpOverlayTitle) => Cow::Borrowed("Gameplay Help"),
+            (Lang::Zh, TextKey::HelpOverlayGoalHeading) => Cow::Borrowed("【目标】"),
+            (Lang::En, TextKey::HelpOverlayGoalHeading) => Cow::Borrowed("[Goal]"),
+            (Lang::Zh, TextKey::HelpOverlayGoalLine) => {
+                Cow::Borrowed("消灭所有敌方人口；己方人口归零则战败。")
+            }
+            (Lang::En, TextKey::HelpOverlayGoalLine) => {
+                Cow::Borrowed("Eliminate all enemy population. You lose if yours hits 0.")
+            }
+            (Lang::Zh, TextKey::HelpOverlayMechanicsHeading) => Cow::Borrowed("【机制】"),
+            (Lang::En, TextKey::HelpOverlayMechanicsHeading) => Cow::Borrowed("[Mechanics]"),
+            (Lang::Zh, TextKey::HelpOverlayMechanicsPopulation) => Cow::Borrowed(
+                "人口会迁徙至你插旗的格子聚集；每格上限 499 人。",
+            ),
+            (Lang::En, TextKey::HelpOverlayMechanicsPopulation) => Cow::Borrowed(
+                "Population migrates toward your flags; max 499 per hex.",
+            ),
+            (Lang::Zh, TextKey::HelpOverlayMechanicsGold) => Cow::Borrowed(
+                "完全控制金矿的六个相邻格子，每步产出金币。",
+            ),
+            (Lang::En, TextKey::HelpOverlayMechanicsGold) => Cow::Borrowed(
+                "Owning all six hexes around a gold mine yields gold each tick.",
+            ),
+            (Lang::Zh, TextKey::HelpOverlayMechanicsCapture) => Cow::Borrowed(
+                "城市受严重攻击会逐级降级：城堡 → 城镇 → 村庄 → 草地。",
+            ),
+            (Lang::En, TextKey::HelpOverlayMechanicsCapture) => Cow::Borrowed(
+                "Strongly attacked cities downgrade: castle -> town -> village -> grass.",
+            ),
+            (Lang::Zh, TextKey::HelpOverlayKeysHeading) => Cow::Borrowed("【键位】"),
+            (Lang::En, TextKey::HelpOverlayKeysHeading) => Cow::Borrowed("[Key Bindings]"),
+            (Lang::Zh, TextKey::HelpOverlayDismiss) => Cow::Borrowed("[?] / [Esc]  关闭"),
+            (Lang::En, TextKey::HelpOverlayDismiss) => Cow::Borrowed("[?] / [Esc]  Close"),
+
             // Outcome
             (Lang::Zh, TextKey::YouWon) => Cow::Borrowed("你胜利了！"),
             (Lang::En, TextKey::YouWon) => Cow::Borrowed("You are victorious!"),
@@ -309,5 +356,15 @@ mod tests {
     fn quit_prompt_translates() {
         assert!(Lang::Zh.t(TextKey::QuitPrompt).contains("退出"));
         assert!(Lang::En.t(TextKey::QuitPrompt).contains("Quit"));
+    }
+
+    #[test]
+    fn help_overlay_translates() {
+        assert!(Lang::Zh.t(TextKey::HelpOverlayTitle).contains("帮助"));
+        assert!(Lang::En.t(TextKey::HelpOverlayTitle).contains("Help"));
+        assert!(Lang::Zh.t(TextKey::HelpOverlayDismiss).contains("关闭"));
+        assert!(Lang::En.t(TextKey::HelpOverlayDismiss).contains("Close"));
+        assert!(Lang::Zh.t(TextKey::HelpOverlayGoalLine).contains("战败"));
+        assert!(Lang::En.t(TextKey::HelpOverlayGoalLine).contains("lose"));
     }
 }

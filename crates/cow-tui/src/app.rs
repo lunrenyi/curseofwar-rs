@@ -17,7 +17,7 @@ use ratatui::Terminal;
 
 use crate::event::{map_key, Modal};
 use crate::i18n::Lang;
-use crate::render::{draw_outcome_banner, draw_quit_dialog, FrameCtx, GameFrame};
+use crate::render::{draw_help_dialog, draw_outcome_banner, draw_quit_dialog, FrameCtx, GameFrame};
 
 const TICK: Duration = Duration::from_millis(10);
 
@@ -116,6 +116,8 @@ impl App {
             );
             if self.modal == Modal::QuitConfirm {
                 draw_quit_dialog(&self.state, &self.ui, &self.lang, area, f.buffer_mut());
+            } else if self.modal == Modal::Help {
+                draw_help_dialog(&self.state, &self.ui, &self.lang, area, f.buffer_mut());
             }
             draw_outcome_banner(&self.state, &self.lang, area, f.buffer_mut());
         })?;
