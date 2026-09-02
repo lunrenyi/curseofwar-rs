@@ -1,7 +1,6 @@
 # Curse of War — Rust 重写版
 
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](./LICENSE)
-[![English](](https://img.shields.io/badge/lang-English-blue.svg)](./README.en.md)
 
 > 一款终端即时策略游戏，本仓库是用 **Rust** 对 [Curse of War 1.3.0](https://github.com/a-nikolaev/curseofwar)（原作者 Alexey Nikolaev，2013）的忠实重写，并自带中文界面。
 
