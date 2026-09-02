@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = ["crates/cow-core", "crates/cow-tui"]
+
+[workspace.package]
+edition = "2021"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/lunrenyi/curseofwar-rs"
+rust-version = "1.75"
+
+[workspace.dependencies]
+rand = "0.8"
+ratatui = "0.27"
+crossterm = "0.28"
+unicode-width = "0.1"
+getopts = "0.2"
+
+# Local crate paths (no version, no edition here; defined per crate)
+cow-core = { path = "crates/cow-core" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
