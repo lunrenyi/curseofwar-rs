@@ -62,7 +62,7 @@ jobs:
 
       - name: build (cross)
         if: matrix.target.cross
-        uses: cross-rs/cross@v0.3
+        uses: cross-rs/cross@v0.2.5
         with:
           command: build --release --bin curseofwar --target ${{ matrix.target.name }}
 
