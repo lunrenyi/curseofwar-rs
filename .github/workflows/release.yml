@@ -1,0 +1,111 @@
+name: release
+
+# Build release binaries for every published GitHub release and attach
+# them as `curseofwar-<version>-<target>.tar.gz` assets.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: build (${{ matrix.target.name }})
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          # Linux x86_64 — built directly on the ubuntu runner.
+          - name: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: false
+            artifact: curseofwar-linux-x86_64
+          # Linux aarch64 — cross-compiled with the `cross` action.
+          - name: aarch64-unknown-linux-gnu
+            os: ubuntu-22.04
+            cross: true
+            artifact: curseofwar-linux-aarch64
+          # macOS Intel.
+          - name: x86_64-apple-darwin
+            os: macos-13
+            cross: false
+            artifact: curseofwar-macos-x86_64
+          # macOS Apple Silicon.
+          - name: aarch64-apple-darwin
+            os: macos-latest
+            cross: false
+            artifact: curseofwar-macos-aarch64
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target.name }}
+
+      - name: cache cargo registry & target
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ matrix.target.name }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.target.name }}-
+            ${{ runner.os }}-cargo-
+
+      - name: build (cross)
+        if: matrix.target.cross
+        uses: cross-rs/cross@v0.3
+        with:
+          command: build --release --bin curseofwar --target ${{ matrix.target.name }}
+
+      - name: build (native cargo)
+        if: "! matrix.target.cross"
+        run: cargo build --release --bin curseofwar --target ${{ matrix.target.name }}
+
+      - name: strip binary
+        if: "! matrix.target.cross"
+        run: |
+          BIN="target/${{ matrix.target.name }}/release/curseofwar"
+          strip "$BIN"
+
+      - name: package tarball
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN="target/${{ matrix.target.name }}/release/curseofwar"
+          DIR="${{ matrix.target.artifact }}"
+          mkdir -p "$DIR"
+          cp "$BIN" "$DIR/curseofwar"
+          cp README.md "$DIR/README.md"
+          cp README.en.md "$DIR/README.en.md"
+          cp README.cn.md "$DIR/README.cn.md"
+          cp LICENSE "$DIR/LICENSE"
+          # Add a small README so the archive contents are self-explanatory.
+          cat > "$DIR/INSTALL.txt" <<'EOF'
+          Curse of War (Rust port)
+          ========================
+
+          Run the binary directly from this directory:
+
+              ./curseofwar
+
+          Optional flags: ./curseofwar --help
+
+          See README.md for full gameplay / key-binding documentation,
+          or press `?` in-game for the in-app help overlay.
+          EOF
+          tar -czf "${{ matrix.target.artifact }}.tar.gz" "$DIR"
+
+      - name: upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.target.artifact }}.tar.gz
+          fail_on_unmatched_files: true
