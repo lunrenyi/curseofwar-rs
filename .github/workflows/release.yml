@@ -2,6 +2,12 @@ name: release
 
 # Build release binaries for every published GitHub release and attach
 # them as `curseofwar-<version>-<target>.tar.gz` assets.
+#
+# Only native targets are built here — cross-compiling Linux aarch64 would
+# require either the `cross-rs/cross` Docker image (no GitHub Action
+# wrapper currently ships an `action.yml`) or a hand-rolled QEMU setup,
+# neither of which is worth the complexity for a v0.1.0 terminal game.
+# Users on aarch64 Linux can build from source: `cargo build --release`.
 
 on:
   release:
@@ -18,25 +24,14 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          # Linux x86_64 — built directly on the ubuntu runner.
           - name: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            cross: false
             artifact: curseofwar-linux-x86_64
-          # Linux aarch64 — cross-compiled with the `cross` action.
-          - name: aarch64-unknown-linux-gnu
-            os: ubuntu-22.04
-            cross: true
-            artifact: curseofwar-linux-aarch64
-          # macOS Intel.
           - name: x86_64-apple-darwin
             os: macos-13
-            cross: false
             artifact: curseofwar-macos-x86_64
-          # macOS Apple Silicon.
           - name: aarch64-apple-darwin
             os: macos-latest
-            cross: false
             artifact: curseofwar-macos-aarch64
 
     steps:
@@ -60,18 +55,11 @@ jobs:
             ${{ runner.os }}-cargo-${{ matrix.target.name }}-
             ${{ runner.os }}-cargo-
 
-      - name: build (cross)
-        if: matrix.target.cross
-        uses: cross-rs/cross@v0.2.5
-        with:
-          command: build --release --bin curseofwar --target ${{ matrix.target.name }}
-
-      - name: build (native cargo)
-        if: "! matrix.target.cross"
+      - name: build
         run: cargo build --release --bin curseofwar --target ${{ matrix.target.name }}
 
       - name: strip binary
-        if: "! matrix.target.cross"
+        shell: bash
         run: |
           BIN="target/${{ matrix.target.name }}/release/curseofwar"
           strip "$BIN"
