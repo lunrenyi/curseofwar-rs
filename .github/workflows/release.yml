@@ -3,11 +3,15 @@ name: release
 # Build release binaries for every published GitHub release and attach
 # them as `curseofwar-<version>-<target>.tar.gz` assets.
 #
-# Only native targets are built here — cross-compiling Linux aarch64 would
-# require either the `cross-rs/cross` Docker image (no GitHub Action
-# wrapper currently ships an `action.yml`) or a hand-rolled QEMU setup,
-# neither of which is worth the complexity for a v0.1.0 terminal game.
-# Users on aarch64 Linux can build from source: `cargo build --release`.
+# Only native targets are built here:
+# - x86_64 Linux and aarch64 Apple Silicon cover the vast majority of
+#   desktop users on standard GitHub-hosted runners.
+# - macOS x86_64 (macos-13) was removed because the Intel runner pool is
+#   notoriously slow to provision (40+ min queue waits observed). Users
+#   on Intel Macs can build from source: `cargo build --release`.
+# - Linux aarch64 would require either the `cross-rs/cross` Docker image
+#   (no GitHub Action wrapper currently ships an `action.yml`) or a
+#   hand-rolled QEMU setup. Users on aarch64 Linux can build from source.
 
 on:
   release:
@@ -27,9 +31,6 @@ jobs:
           - name: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             artifact: curseofwar-linux-x86_64
-          - name: x86_64-apple-darwin
-            os: macos-13
-            artifact: curseofwar-macos-x86_64
           - name: aarch64-apple-darwin
             os: macos-latest
             artifact: curseofwar-macos-aarch64
