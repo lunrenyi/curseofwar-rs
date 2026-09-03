@@ -1,9 +1,5 @@
 # Curse of War — Rust Re-implementation
 
-[![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](./LICENSE)
-[![中文文档](](https://img.shields.io/badge/中文-README-red.svg)](./README.cn.md))
-[![English](](https://img.shields.io/badge/English-README-blue.svg)](./README.en.md))
-
 ![demo](exp/image/demo.png)
 
 A faithful Rust port of [Curse of War 1.3.0](https://github.com/a-nikolaev/curseofwar) by Alexey Nikolaev (2013), with a **Chinese UI by default**.
