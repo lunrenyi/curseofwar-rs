@@ -1,10 +1,21 @@
-# Curse of War — Rust 重写版
+# Curse of War — Rust 重写版 · 终端即时策略游戏（TUI RTS in Rust）
 
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](./LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
+[![Made with ratatui](https://img.shields.io/badge/TUI-ratatui%20%2B%20crossterm-blueviolet.svg)](https://github.com/ratatui/ratatui)
+[![GitHub stars](https://img.shields.io/github/stars/lunrenyi/curseofwar-rs?style=social)](https://github.com/lunrenyi/curseofwar-rs/stargazers)
 
-> 一款终端即时策略游戏，本仓库是用 **Rust** 对 [Curse of War 1.3.0](https://github.com/a-nikolaev/curseofwar)（原作者 Alexey Nikolaev，2013）的忠实重写，并自带中文界面。
+> 一款**终端即时策略游戏**（terminal RTS / TUI RTS），本仓库是用 **Rust** 对 [Curse of War 1.3.0](https://github.com/a-nikolaev/curseofwar)（原作者 Alexey Nikolaev，2013）的忠实重写，并自带中文界面。
 
-这是一款六边形网格上的快节奏策略游戏：你不是操控每个单位，而是做高层规划——建造基础设施、争夺资源、移动军队。游戏机制非常贴近一战/二战时期的战争形态，但并不指涉任何具体历史时期。
+这是一款**六边形网格上的快节奏策略游戏**：你不是操控每个单位，而是做高层规划——建造基础设施、争夺金矿、移动军队。游戏机制非常贴近一战/二战时期的战争形态，但并不指涉任何具体历史时期。
+
+## 为什么有这个 Rust 版本？
+
+网上已有多个 `Curse of War` 的 Rust 移植。本仓库的差异化定位在三点：
+
+- **纯现代终端栈**：用 [`ratatui`](https://github.com/ratatui/ratatui) + [`crossterm`](https://github.com/crossterm-rs/crossterm) 替代原版 ncurses + SDL1 双前端——**不需要 X11、不需要 SDL**，tmux、SSH、CI、树莓派、无显示器的服务器都能直接跑。
+- **默认中文界面**：所有文案已本地化，可通过 `--lang en` / `$COW_LANG` / `$LANG` 一键切回英文。也是终端 i18n 的一个研究样本。
+- **两 crate 的 Rust workspace**：游戏规则在 `cow-core`（无 UI / IO 依赖），终端前端在 `cow-tui`。规则引擎独立可复用——可写 bot、做 headless 仿真、未来再接其他前端。
 
 ![demo](exp/image/demo.png)
 
